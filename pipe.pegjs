@@ -5,18 +5,18 @@ start = _ code:(statements / _) _ {
     };
  }
 
-statements = _ pipe_statement:pipe_statement {
-    return pipe_statement
+statements = _ pipeStatement:PipeStatement {
+    return pipeStatement
 }
 
-pipe_statement = _ expression:expression _ pipe:(middle_pipe / end_pipe) {
+PipeStatement = _ expression:expression _ pipe:(middle_pipe / end_pipe) {
     return {
         "type": "ExpressionStatement",
         "expression": pipe(expression)
     }
 }
 
-middle_pipe = _ "|>" _ callee:(member_expression / identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ tail:(middle_pipe / end_pipe) {
+middle_pipe = _ "|>" _ callee:(MemberExpression / Identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ tail:(middle_pipe / end_pipe) {
     if (!args[0]) {
         args[0] = []
     }
@@ -33,7 +33,7 @@ middle_pipe = _ "|>" _ callee:(member_expression / identifier) "(" _ args:(middl
     }
 }
 
-end_pipe = _ "|>" _ callee:(member_expression / identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ {
+end_pipe = _ "|>" _ callee:(MemberExpression / Identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ {
     if (!args[0]) {
         args[0] = []
     }
@@ -58,11 +58,7 @@ middle_arguments = expression:expression _ "," _ args:(middle_arguments / last_a
 
 last_arguments = expression:expression { return [expression] }
 
-expression = expression:(variable / arithmetic / literal ) { return expression; }
-
-literal = value:(string / Integer) {
-   return {"type": "Literal", "value": value };
-}
+expression = expression:(variable / arithmetic / Literal / ArrayExpression ) { return expression; }
 
 variable = !keywords variable:name {
   return {
@@ -71,14 +67,14 @@ variable = !keywords variable:name {
   }
 }
 
-identifier = identifier:name {
+Identifier = identifier:name {
     return {
         "type": "Identifier",
         "name": identifier
     }
 }
 
-member_expression = object:identifier "." property:identifier {
+MemberExpression = object:Identifier "." property:Identifier {
     return {
         "type": "MemberExpression",
         "object": object,
@@ -91,10 +87,6 @@ member_expression = object:identifier "." property:identifier {
 keywords = "if" / "else" / "var" / "let" / "const" / "for" / "while" / "import" / "from" / "require"
 
 name = [A-Z_$a-z][A-Z_a-z0-9]* { return text(); }
-
-string = "\"" ([^"] / "\\\\\"")*  "\"" {
-  return JSON.parse(text());
-}
 
 arithmetic
   = head:term tail:(_ ("+" / "-") _ term)* {
@@ -122,14 +114,35 @@ term
 
 factor
   = "(" _ expr:arithmetic _ ")" { return expr; }
-  / literal
+  / Literal
+
+Literal "literal" = value:(String / Integer) {
+    return {
+        "type": "Literal",
+        "value": value
+    };
+}
+
+String "string" = "\"" ([^"] / "\\\\\"")*  "\"" {
+  return JSON.parse(text());
+}
 
 Integer "integer"
-  = _ [0-9]+ { return parseInt(text(), 10); }
+    = _ [0-9]+ { return parseInt(text(), 10); }
 
-comments = "#" [^\n]*
+ArrayExpression "array" = "[" _ head:Literal tail:( _ "," _ Literal)* _ "]" {
+    let literals = tail.map(v => v[3])
 
-_ "whitespace"
-  = [ \t\n\r]* {
-   return [];
+    literals.unshift(head)
+
+    return {
+        "type": "ArrayExpression",
+        "elements": literals
+    }
+}
+
+Comments = "#" [^\n]*
+
+_ "whitespace" = [ \t\n\r]* {
+    return [];
 }

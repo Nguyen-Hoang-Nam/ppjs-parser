@@ -37,13 +37,20 @@ test("1 pipe operator with arithmetic", (t) => {
     t.is(ppjs, `print(1 + 1);`);
 });
 
-test("1 pipe operator with arra", (t) => {
+test("1 pipe operator with array", (t) => {
     const ppjs = convertPipeToJS(`
         [1, 2, 3]
         |> print()
         `);
 
-    t.is(ppjs, `print([1, 2, 3]);`);
+    t.is(
+        ppjs,
+        `print([
+    1,
+    2,
+    3
+]);`
+    );
 });
 
 test("2 pipe operator", (t) => {

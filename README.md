@@ -21,9 +21,14 @@ convertPipeToJS(`
 `); // print(capitalName("text"))
 ```
 
+## Concept
+
+Parser will convert code to [Esprima AST](https://astexplorer.net/) then use Escodegen to convert to Javascript
+code.
+
 ## TO DO
 
-- [ ] Support array type
+- [x] Support array type
 
 ## Contributing
 
