@@ -22,8 +22,15 @@
         "type": "git",
         "url": "https://github.com:Nguyen-Hoang-Nam/ppjs-parser.git"
     },
+    "scripts": {
+        "test": "ava",
+        "build": "peggy -o pipe.js --format es pipe.pegjs"
+    },
     "dependencies": {
         "escodegen": "^2.0.0",
         "peggy": "^2.0.1"
+    },
+    "devDependencies": {
+        "ava": "^4.3.1"
     }
 }

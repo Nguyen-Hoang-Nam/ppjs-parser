@@ -16,7 +16,7 @@ pipe_statement = _ expression:expression _ pipe:(middle_pipe / end_pipe) {
     }
 }
 
-middle_pipe = _ "|>" _ identifier:identifier "(" _ args:(middle_arguments / last_arguments)* _ ")" _ tail:(middle_pipe / end_pipe) {
+middle_pipe = _ "|>" _ callee:(member_expression / identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ tail:(middle_pipe / end_pipe) {
     if (!args[0]) {
         args[0] = []
     }
@@ -26,14 +26,14 @@ middle_pipe = _ "|>" _ identifier:identifier "(" _ args:(middle_arguments / last
 
         return tail({
             "type": "CallExpression",
-            "callee": identifier,
+            "callee": callee,
             "arguments": args[0],
             "optional": false
         })
     }
 }
 
-end_pipe = _ "|>" _ identifier:identifier "(" _ args:(middle_arguments / last_arguments)* _ ")" _ {
+end_pipe = _ "|>" _ callee:(member_expression / identifier) "(" _ args:(middle_arguments / last_arguments)* _ ")" _ {
     if (!args[0]) {
         args[0] = []
     }
@@ -44,7 +44,7 @@ end_pipe = _ "|>" _ identifier:identifier "(" _ args:(middle_arguments / last_ar
         return {
 
             "type": "CallExpression",
-            "callee": identifier,
+            "callee": callee,
             "arguments": args[0],
             "optional": false
         }
@@ -75,6 +75,16 @@ identifier = identifier:name {
     return {
         "type": "Identifier",
         "name": identifier
+    }
+}
+
+member_expression = object:identifier "." property:identifier {
+    return {
+        "type": "MemberExpression",
+        "object": object,
+        "property": property,
+        "computed": false,
+        "optional": false
     }
 }
 

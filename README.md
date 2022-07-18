@@ -18,8 +18,12 @@ convertPipeToJS(`
 "text"
 |> capitalName()
 |> print()
-`); // print(capitalName("text))
+`); // print(capitalName("text"))
 ```
+
+## TO DO
+
+- [ ] Support array type
 
 ## Contributing
 
