@@ -31,6 +31,6 @@
         "peggy": "^2.0.1"
     },
     "devDependencies": {
-        "ava": "4.3.3"
+        "ava": "5.3.1"
     }
 }
