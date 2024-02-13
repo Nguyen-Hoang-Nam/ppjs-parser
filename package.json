@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "escodegen": "^2.0.0",
-        "peggy": "^2.0.1"
+        "peggy": "^4.0.0"
     },
     "devDependencies": {
         "ava": "6.1.1"
